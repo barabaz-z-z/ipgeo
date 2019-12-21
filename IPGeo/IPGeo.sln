@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2019
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPGeo.API", "IPGeo.API\IPGeo.API.csproj", "{2B2C12AB-C5DA-4BCC-BF6A-DD7A01359D2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPGeo.Data", "IPGeo.Data\IPGeo.Data.csproj", "{FD24F71A-8199-43DC-A4E3-1464C285DE5E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B2C12AB-C5DA-4BCC-BF6A-DD7A01359D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2C12AB-C5DA-4BCC-BF6A-DD7A01359D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B2C12AB-C5DA-4BCC-BF6A-DD7A01359D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2C12AB-C5DA-4BCC-BF6A-DD7A01359D2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD24F71A-8199-43DC-A4E3-1464C285DE5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD24F71A-8199-43DC-A4E3-1464C285DE5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD24F71A-8199-43DC-A4E3-1464C285DE5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD24F71A-8199-43DC-A4E3-1464C285DE5E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {124683B9-95FF-4176-80BA-24F8D1BFDFCC}
+	EndGlobalSection
+EndGlobal
