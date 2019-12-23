@@ -1,46 +1,66 @@
-﻿using IPGeo.Data.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using IPGeo.Data.Models;
 
 namespace IPGeo.Data
 {
     public class IPGeoContext : DbContext
     {
-        public virtual DbSet<IPGeoDataPair> IPGeoDataCollection { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<IP> IPs { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public IPGeoContext(DbContextOptions<IPGeoContext> options)
+            : base(options)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your 
-#warning connection string, you should move it out of source code. 
-# warning See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=Password1!");
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasPostgresExtension("admin");
+            modelBuilder.HasPostgresExtension("adminpack");
 
-            modelBuilder.Entity<IPGeoDataPair>(b =>
+            modelBuilder.Entity<Country>(b =>
             {
-                b.ToTable("ip2location_db1")
-                    .HasKey(e => new { e.IpFrom, e.IpTo });
+                b.ToTable("countries");
+
+                b.HasIndex(e => e.Code)
+                    .HasName("countries_code_key")
+                    .IsUnique();
+
+                b.HasIndex(e => e.Name)
+                    .HasName("countries_name_key")
+                    .IsUnique();
+
+                b.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .UseNpgsqlIdentityAlwaysColumn();
+
+                b.Property(e => e.Code)
+                    .IsRequired()
+                    .HasColumnName("code")
+                    .HasColumnType("character(2)");
+
+                b.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(64);
+            });
+
+            modelBuilder.Entity<IP>(b =>
+            {
+                b.ToTable("ips").HasKey(e => new { e.IpFrom, e.IpTo });
 
                 b.Property(e => e.IpFrom).HasColumnName("ip_from");
+
                 b.Property(e => e.IpTo).HasColumnName("ip_to");
-                b.Property(e => e.CountryCode)
-                    .IsRequired()
-                    .HasColumnName("country_code")
-                    .HasColumnType("character(2)");
-                b.Property(e => e.CountryName)
-                    .IsRequired()
-                    .HasColumnName("country_name")
-                    .HasMaxLength(64);
+
+                b.Property(e => e.CountryId).HasColumnName("country_id");
+
+                b.HasOne(d => d.Country)
+                    .WithMany(p => p.IPs)
+                    .HasForeignKey(d => d.CountryId)
+                    .HasConstraintName("ips_country_id_fkey");
             });
         }
     }
