@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IPGeo.Data;
+using IPGeo.Services;
 
 namespace IPGeo.API
 {
@@ -26,6 +27,8 @@ namespace IPGeo.API
             services.AddDbContext<IPGeoContext>(o => o.UseNpgsql(connectionString));
 
             services.AddMvc();
+
+            services.AddScoped<IPsService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

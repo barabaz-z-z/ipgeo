@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IPGeo.Data\IPGeo.Data.csproj" />
+    <ProjectReference Include="..\IPGeo.Services\IPGeo.Services.csproj" />
   </ItemGroup>
 
 </Project>
