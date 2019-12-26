@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using IPGeo.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace IPGeo.Data
 {
-    public class IPGeoContext : DbContext
+    public class IPGeoContext : DbContext, ISetDataStrategy
     {
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<IP> IPs { get; set; }
+        public virtual DbSet<History> History { get; set; }
+
+        public ISetDataStrategy SetDataStrategy { get; set; }
 
         public IPGeoContext(DbContextOptions<IPGeoContext> options)
             : base(options)
@@ -19,6 +22,8 @@ namespace IPGeo.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("adminpack");
+
+            modelBuilder.Entity<History>(b => b.ToTable("history").HasKey(e => e.UpdatedAt));
 
             modelBuilder.Entity<Country>(b =>
             {
@@ -62,6 +67,11 @@ namespace IPGeo.Data
                     .HasForeignKey(d => d.CountryId)
                     .HasConstraintName("ips_country_id_fkey");
             });
+        }
+
+        public void SetData(string filePath)
+        {
+            SetDataStrategy.SetData(filePath);
         }
     }
 }
