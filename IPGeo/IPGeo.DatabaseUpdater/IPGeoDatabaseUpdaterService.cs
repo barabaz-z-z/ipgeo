@@ -9,9 +9,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using HtmlAgilityPack;
 using IPGeo.Data;
-using Microsoft.Extensions.Hosting;
+using IPGeo.Data.Strategies;
 
 namespace IPGeo.DatabaseUpdater
 {
@@ -40,6 +41,9 @@ namespace IPGeo.DatabaseUpdater
                     _context.Database.EnsureCreated();
 
                     var strategy = await ResolveSetDataStrategyAsync();
+                    if (strategy == null)
+                        return;
+
                     _context.SetDataStrategy = strategy;
 
                     var webClient = new WebClient();
@@ -49,7 +53,7 @@ namespace IPGeo.DatabaseUpdater
                 },
                 null,
                 TimeSpan.Zero,
-                TimeSpan.FromMinutes(5));
+                TimeSpan.FromMinutes(10));
 
             return Task.CompletedTask;
         }
@@ -68,7 +72,7 @@ namespace IPGeo.DatabaseUpdater
 
         private async Task<ISetDataStrategy> ResolveSetDataStrategyAsync()
         {
-            var history = _context.History.FirstOrDefault();
+            var history = _context.History.LastOrDefault();
             if (history == null)
             {
                 return new SetInitialDataStrategy(_context);
@@ -108,7 +112,8 @@ namespace IPGeo.DatabaseUpdater
             if (!e.Cancelled && e.Error == null)
             {
                 ExtractIP2LocationCSVFileFromZip();
-                UpdateDatabase();
+
+                _context.SetData(csvPath);
 
                 File.Delete(csvPath);
                 File.Delete(csvZipPath);
@@ -133,12 +138,6 @@ namespace IPGeo.DatabaseUpdater
                     break;
                 }
             }
-        }
-
-        private void UpdateDatabase()
-        {
-            _context.SetDataStrategy = new SetInitialDataStrategy(_context);
-            _context.SetData(csvPath);
         }
     }
 }

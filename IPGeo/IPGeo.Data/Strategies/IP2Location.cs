@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IPGeo.Data
+namespace IPGeo.Data.Strategies
 {
     class IP2Location
     {
-        public string IPFrom { get; set; }
-        public string IPTo { get; set; }
+        public uint IPFrom { get; set; }
+        public uint IPTo { get; set; }
         public string CountryCode { get; set; }
         public string CountryName { get; set; }
     }

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using IPGeo.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using IPGeo.Data.Models;
+using IPGeo.Data.Strategies;
 
 namespace IPGeo.Data
 {
@@ -23,7 +24,18 @@ namespace IPGeo.Data
         {
             modelBuilder.HasPostgresExtension("adminpack");
 
-            modelBuilder.Entity<History>(b => b.ToTable("history").HasKey(e => e.UpdatedAt));
+            modelBuilder.Entity<History>(b =>
+            {
+                b.ToTable("history");
+
+                b.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .UseNpgsqlIdentityAlwaysColumn();
+
+                b.Property(e => e.UpdatedAt)
+                    .HasColumnName("update_at")
+                    .HasColumnType("timestamp");
+            });
 
             modelBuilder.Entity<Country>(b =>
             {

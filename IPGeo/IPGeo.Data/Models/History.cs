@@ -6,6 +6,7 @@ namespace IPGeo.Data.Models
 {
     public class History
     {
+        public int Id { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
 }

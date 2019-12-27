@@ -6,7 +6,7 @@ using System.Text;
 using CsvHelper;
 using IPGeo.Data.Models;
 
-namespace IPGeo.Data
+namespace IPGeo.Data.Strategies
 {
     public sealed class SetInitialDataStrategy : ISetDataStrategy
     {
@@ -31,8 +31,8 @@ namespace IPGeo.Data
                 {
                     var ip = new IP
                     {
-                        IpFrom = UInt32.Parse(record.IPFrom),
-                        IpTo = UInt32.Parse(record.IPTo)
+                        IpFrom = record.IPFrom,
+                        IpTo = record.IPTo
                     };
 
                     if (record.CountryCode.Length > 1)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IPGeo.Data
+namespace IPGeo.Data.Strategies
 {
     public interface ISetDataStrategy
     {
