@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IPGeo.Data
@@ -10,8 +11,13 @@ namespace IPGeo.Data
     {
         public static IServiceCollection AddIPGeoContext(this IServiceCollection services)
         {
+            var builder = new ConfigurationBuilder()
+                .AddJsonFile("datasettings.json", optional: false, reloadOnChange: true);
+            var configuration = builder.Build();
+            var connectionString = configuration.GetConnectionString("Postgre");
+
             return services
-                .AddDbContext<IPGeoContext>(o => o.UseNpgsql("host=localhost;database=ipgeo;username=postgres;password=Password1!"));
+                .AddDbContext<IPGeoContext>(o => o.UseNpgsql(connectionString));
         }
     }
 }

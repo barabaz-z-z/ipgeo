@@ -1,0 +1,5 @@
+{
+	"ConnectionStrings": {
+		"Postgre": "host=localhost;database=ipgeo;username=postgres;password=Password1!"
+	}
+}
