@@ -10,8 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using Microsoft.Extensions.Hosting;
 using IPGeo.Data;
+using Microsoft.Extensions.Hosting;
 
 namespace IPGeo.DatabaseUpdater
 {
@@ -39,22 +39,13 @@ namespace IPGeo.DatabaseUpdater
                 {
                     _context.Database.EnsureCreated();
 
-                    var history = _context.History.FirstOrDefault();
+                    var strategy = await ResolveSetDataStrategyAsync();
+                    _context.SetDataStrategy = strategy;
 
-                    if (history == null)
-                    {
-                        DownloadIP2LocationCSVFile();
-                    }
-                    else
-                    {
-                        var date = await GetUploadFileDateAsync();
-                        var isNewDatabaseAvailable = date.CompareTo(history.UpdatedAt) > 0;
-                        if (isNewDatabaseAvailable)
-                        {
-                            // update database
-                        }
-                    }
+                    var webClient = new WebClient();
+                    webClient.DownloadFileCompleted += DownloadIP2LocationCSVFileCompleted;
 
+                    webClient.DownloadFileAsync(new Uri(csvZipFileUrl), csvZipPath);
                 },
                 null,
                 TimeSpan.Zero,
@@ -75,7 +66,26 @@ namespace IPGeo.DatabaseUpdater
             _timer?.Dispose();
         }
 
-        private async Task<DateTime> GetUploadFileDateAsync()
+        private async Task<ISetDataStrategy> ResolveSetDataStrategyAsync()
+        {
+            var history = _context.History.FirstOrDefault();
+            if (history == null)
+            {
+                return new SetInitialDataStrategy(_context);
+            }
+
+            var date = await GetUploadIP2LocationCSVFileDateAsync();
+            var shouldBeUpdated = date.CompareTo(history.UpdatedAt) > 0;
+
+            if (shouldBeUpdated)
+            {
+                return new UpdateDataStrategy(_context);
+            }
+
+            return null;
+        }
+
+        private async Task<DateTime> GetUploadIP2LocationCSVFileDateAsync()
         {
             var httpClient = new HttpClient();
             var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, fileServerUrl));
@@ -93,19 +103,11 @@ namespace IPGeo.DatabaseUpdater
             return DateTime.MinValue;
         }
 
-        private void DownloadIP2LocationCSVFile()
-        {
-            var webClient = new WebClient();
-            webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-
-            webClient.DownloadFileAsync(new Uri(csvZipFileUrl), csvZipPath);
-        }
-
-        private void WebClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        private void DownloadIP2LocationCSVFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             if (!e.Cancelled && e.Error == null)
             {
-                Extract();
+                ExtractIP2LocationCSVFileFromZip();
                 UpdateDatabase();
 
                 File.Delete(csvPath);
@@ -113,7 +115,7 @@ namespace IPGeo.DatabaseUpdater
             }
         }
 
-        private void Extract()
+        private void ExtractIP2LocationCSVFileFromZip()
         {
             // https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-compress-and-extract-files
 
@@ -127,6 +129,8 @@ namespace IPGeo.DatabaseUpdater
                     var destinationPath = Path.GetFullPath(csvPath);
 
                     entry.ExtractToFile(destinationPath, true);
+
+                    break;
                 }
             }
         }
