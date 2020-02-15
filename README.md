@@ -1,3 +1,15 @@
+# Task
+
+Develop the web-service to define geo location by the user IP.
+
+# Requirements
+- The web-service stores all geographical data for every IP in PostgerSQL database.
+- The web-service periodically updates mentioned above the database using some data provider, for example, MaxMind GeoLite2.
+- The application for updating database is type of console.
+- The web-service provides REST API to get data in JSON.
+
+# Installation
+
 Launch PowerShell script `IPGeo/Solution Items/installer.ps1`
     It run publish API and Updater service (you can find `IPGeo Database Updater` in Windows Services), register service in Windows Services, run API.
     
